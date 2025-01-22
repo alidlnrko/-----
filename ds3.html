@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Двойной щелевой опыт Юнга</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            border: 1px solid #000;
+            margin-top: 20px;
+        }
+
+        .theory {
+            max-width: 800px;
+            text-align: justify;
+            padding: 20px;
+        }
+
+        .controls {
+            margin: 20px;
+        }
+
+        .controls label {
+            margin-right: 10px;
+        }
+
+        .controls input {
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Двойной щелевой опыт Юнга</h1>
+
+    <div class="theory">
+        <p>
+            Двойной щелевой опыт Юнга продемонстрировал волновую природу света. В этом эксперименте свет проходит через две узкие щели и формирует на экране характерную интерференционную картину с чередующимися полосами света и тьмы. Этот эффект возникает из-за интерференции световых волн, усиливающих или ослабляющих друг друга.
+        </p>
+        <p>
+            Одновременно этот опыт показывает корпускулярную природу света, если рассматривать фотоны как частицы, которые проходят через одну из щелей. Таким образом, данный эксперимент иллюстрирует двойственную природу света.
+        </p>
+    </div>
+
+    <div class="controls">
+        <label for="slitDistance">Расстояние между щелями (px):</label>
+        <input type="range" id="slitDistance" min="50" max="200" value="100">
+
+        <label for="waveLength">Длина волны (px):</label>
+        <input type="range" id="waveLength" min="10" max="50" value="20">
+
+        <label for="particleMode">Режим частиц:</label>
+        <input type="checkbox" id="particleMode">
+    </div>
+
+    <canvas id="slitCanvas" width="800" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('slitCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2;
+
+        const slitDistanceInput = document.getElementById('slitDistance');
+        const waveLengthInput = document.getElementById('waveLength');
+        const particleModeInput = document.getElementById('particleMode');
+
+        let slitDistance = parseInt(slitDistanceInput.value);
+        let waveLength = parseInt(waveLengthInput.value);
+        let particleMode = particleModeInput.checked;
+
+        slitDistanceInput.addEventListener('input', (e) => {
+            slitDistance = parseInt(e.target.value);
+            drawScene();
+        });
+
+        waveLengthInput.addEventListener('input', (e) => {
+            waveLength = parseInt(e.target.value);
+            drawScene();
+        });
+
+        particleModeInput.addEventListener('change', (e) => {
+            particleMode = e.target.checked;
+            drawScene();
+        });
+
+        const drawSlits = () => {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(centerX - slitDistance / 2 - 5, 50, 10, 50);
+            ctx.fillRect(centerX + slitDistance / 2 - 5, 50, 10, 50);
+        };
+
+        const drawInterferencePattern = () => {
+            const screenY = 350;
+            for (let x = 0; x < canvasWidth; x++) {
+                let intensity = 0;
+                for (let slit of [-slitDistance / 2, slitDistance / 2]) {
+                    const pathDiff = Math.sqrt((x - centerX - slit) ** 2 + (screenY - 50) ** 2);
+                    intensity += Math.sin((2 * Math.PI * pathDiff) / waveLength);
+                }
+
+                intensity = Math.pow(Math.abs(intensity) / 2, 2); // нормализация интенсивности
+
+                ctx.fillStyle = `rgba(0, 0, 255, ${intensity})`;
+                ctx.fillRect(x, screenY, 1, canvasHeight - screenY);
+            }
+        };
+
+        const drawParticles = () => {
+            const particleCount = 500;
+            const screenY = 350;
+            ctx.fillStyle = 'blue';
+            for (let i = 0; i < particleCount; i++) {
+                const slit = Math.random() > 0.5 ? -slitDistance / 2 : slitDistance / 2;
+                const x = centerX + slit + Math.random() * 10 - 5;
+                const y = screenY + Math.random() * 30 - 15;
+                ctx.fillRect(x, y, 2, 2);
+            }
+        };
+
+        const drawScene = () => {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            drawSlits();
+            if (particleMode) {
+                drawParticles();
+            } else {
+                drawInterferencePattern();
+            }
+        };
+
+        drawScene();
+    </script>
+</body>
+</html>
