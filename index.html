@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -102,7 +102,14 @@
             ctx.fillRect(centerX + slitDistance / 2 - 5, 50, 10, 50);
         };
 
-        const drawInterferencePattern = () => {
+        const drawParticleBefore = (x, y) => {
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        };
+
+        const drawWaveAfter = () => {
             const screenY = 350;
             for (let x = 0; x < canvasWidth; x++) {
                 let intensity = 0;
@@ -118,26 +125,23 @@
             }
         };
 
-        const drawParticles = () => {
-            const particleCount = 500;
-            const screenY = 350;
-            ctx.fillStyle = 'blue';
-            for (let i = 0; i < particleCount; i++) {
-                const slit = Math.random() > 0.5 ? -slitDistance / 2 : slitDistance / 2;
-                const x = centerX + slit + Math.random() * 10 - 5;
-                const y = screenY + Math.random() * 30 - 15;
-                ctx.fillRect(x, y, 2, 2);
-            }
+        const drawTransition = () => {
+            const particleX = centerX;
+            const particleY = 200;
+
+            // Draw particle before slits
+            drawParticleBefore(particleX, particleY);
+
+            // Draw slits
+            drawSlits();
+
+            // Draw wave after slits
+            drawWaveAfter();
         };
 
         const drawScene = () => {
             ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            drawSlits();
-            if (particleMode) {
-                drawParticles();
-            } else {
-                drawInterferencePattern();
-            }
+            drawTransition();
         };
 
         drawScene();
